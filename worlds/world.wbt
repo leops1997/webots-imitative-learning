@@ -1,0 +1,64 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "../protos/TurtleBot3Burger.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/nvidia/jetbot/protos/JetBotRaspberryPiCamera.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/devices/robotis/protos/RobotisLds01.proto"
+
+WorldInfo {
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.34004584021130413 -0.4559243418624321 0.8224973076261687 4.362406896067065
+  position 5.7852487907901144 2.4049799246981247 6.3540990445571195
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 20 10
+  floorTileSize 20 10
+  floorAppearance PBRAppearance {
+    baseColorMap ImageTexture {
+      url [
+        "textures/Circuit.png"
+      ]
+    }
+    roughness 1
+    metalness 0
+  }
+}
+TurtleBot3Burger {
+  hidden position_0_0 51.27150810997287
+  hidden position_0_1 51.271508096725995
+  hidden position_0_2 -3.1390884225263074
+  hidden position2_0_2 6.971001278934454
+  hidden position3_0_2 336.1472169753137
+  hidden linearVelocity_0 -1.1123887523111777e-14 -3.314528599249939e-17 0
+  hidden angularVelocity_0 7.947225374514889e-16 -7.815850309338332e-16 1.3902250196876295e-16
+  hidden rotation_10 0 -1 0 0.5647703474638205
+  hidden linearVelocity_10 -3.3376862949463482e-18 7.009612933926676e-17 -1.2459054561821017e-16
+  hidden angularVelocity_10 -3.566952084632592e-15 -3.526677976789084e-16 1.4062414224479196e-16
+  hidden rotation_11 -0.9603927134417752 1.1216718654153662e-06 -0.27865002416415896 3.141588576420816
+  hidden linearVelocity_11 -2.6708707270710606e-17 -9.747161664880332e-17 -3.7405121974752823e-16
+  hidden angularVelocity_11 3.2131965653656998e-15 -8.413123285985401e-16 1.3054919419669044e-16
+  hidden rotation_12 -0.0011500460439565307 0.9999991077446289 0.00067963522789504 2.4537741554603083
+  hidden linearVelocity_12 1.1088352110747807e-14 -5.567119510203573e-15 2.5236334752823315e-14
+  hidden angularVelocity_12 1.3917797842729166e-12 2.7720878418998404e-12 -2.768443679561019e-31
+  translation 4.114405687366063 -3.5776503222751304 -0.00012411104019639796
+  rotation -0.002135330704520144 -0.5503079034070141 -0.8349590719373967 0.004198891476852426
+  controller "expert_controller"
+  extensionSlot [
+    JetBotRaspberryPiCamera {
+      translation 0.08 0 0
+      fieldOfView 1.5708
+      width 36
+      height 24
+    }
+    RobotisLds01 {
+    }
+  ]
+}
