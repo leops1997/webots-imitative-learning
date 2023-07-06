@@ -1,6 +1,16 @@
-"""expert_controller controller."""
+"""
+Trabalho Final - INE6116000
+
+@author: Leonardo Pezenatto da Silva
+@email: leonardo.pezenatto@posgrad.ufsc.br
+@date: July 06, 2023
+"""
+
+"""imitative_controller controller."""
 
 #!/usr/bin/env python3
+
+print(__doc__)
 
 from controller import Robot
 from controller import Camera
@@ -18,6 +28,10 @@ from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 
 class MyRobot():
+    """
+    Class MyRobot.
+    Defines the Robt and set devices.
+    """
     def __init__(self, robot):
         
         self.robot = robot
@@ -36,6 +50,10 @@ class MyRobot():
         Camera.enable(self.camera, self.timestep)
 
 class Expert(MyRobot):
+    """
+    Class Expert.
+    Have all methods needed to implement Expert of imitative learning.
+    """
     def __init__(self, robot):
         super().__init__(robot)
         self.keyboard = Keyboard()
@@ -44,6 +62,9 @@ class Expert(MyRobot):
         self.states = []
     
     def keyboard_teleop(self, key, left_speed, right_speed, speed):
+        """
+        Maps commands from keys
+        """
         left_speed = speed
         right_speed = speed
         quit = False
@@ -66,6 +87,10 @@ class Expert(MyRobot):
         return [left_speed, right_speed], speed, quit
         
     def run(self):
+        """
+        Run Expert methods.
+        Give the control to the Expert with keyboard
+        """
         left_speed = 0.0
         right_speed = 0.0
         speed = 0.0
@@ -73,10 +98,10 @@ class Expert(MyRobot):
         path = "data/"
         print("Expert on control...")
         while self.robot.step(self.timestep) != -1:
-            image = self.camera.getImageArray()
+            image = self.camera.getImageArray() # Get image from the robot camera
             motor_speed, speed, quit = self.keyboard_teleop(self.keyboard.getKey(),left_speed, right_speed, speed)
-            self.left_motor.setVelocity(motor_speed[0])
-            self.right_motor.setVelocity(motor_speed[1])
+            self.left_motor.setVelocity(motor_speed[0]) # Command motor 1
+            self.right_motor.setVelocity(motor_speed[1]) # Command motor 2
             self.actions.append(motor_speed.copy())
             self.states.append(image.copy())
             if quit:
@@ -89,7 +114,10 @@ class Expert(MyRobot):
                 break
 
 class Net(nn.Module):
-
+    """
+    Class Net.
+    Have all methods needed to implement the Neural Network.
+    """
     def __init__(self, epochs, lr, batch_size):
         super(Net, self).__init__()
         
@@ -137,12 +165,6 @@ class Net(nn.Module):
         Test model with the testset.
         Train the model by the amount of epochs.
         Save model on "path/trained_model.pth"
-        :param trainset: training dataset
-        :param testset: test dataset
-        :param epochs: number os epochs
-        :param path: path to save the model
-        :return cost: List with the cost of each epoch
-        :return accuracy: List with the accuracy of each epoch
         """
         epoch_mae = 0
         epoch_loss = 0
@@ -213,6 +235,12 @@ class Net(nn.Module):
         self.testset = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False)
     
     def compute_mae(self, pred, target):
+        """
+        Compute the Mean Absolute Error
+        :param pred: nn predicted value
+        :param target: true value
+        :return result: mae value
+        """
         result = mean_absolute_error(target.numpy(), pred.numpy())
         return result
         
@@ -234,11 +262,20 @@ class Net(nn.Module):
         plt.show()  
         
 class Agent(MyRobot):
+    """
+    Class Agent.
+    Have all methods needed to train and control the Agent (Robot).
+    """
     def __init__(self, net, robot):
         super().__init__(robot)
         self.net = net
        
     def run(self, need_train):
+        """
+        Run Agent methods. If need_train is False, 
+        the agent will not be trained and will use an available trained model.
+        :param pred: nn predicted value
+        """
         if need_train:
             self.net.load_data()
             self.net.train() # training mode
@@ -247,11 +284,11 @@ class Agent(MyRobot):
         self.net.eval() # evaluation mode
         with torch.no_grad(): # disable gradient calculation for inference
             while self.robot.step(self.timestep) != -1:
-                image = self.camera.getImageArray()
+                image = self.camera.getImageArray() # Get image from the robot camera
                 data = torch.from_numpy(np.array(image).copy()).to(torch.float32) 
                 data = data.unsqueeze(0)
                 data = data.transpose(1,3)
-                motor_speed = torch.logit(self.net(data)).squeeze().tolist()
+                motor_speed = torch.logit(self.net(data)).squeeze().tolist() # Get value from the nn
                 if motor_speed[0]>20:
                     motor_speed[0]=20
                 elif motor_speed[0]<-20:
@@ -260,15 +297,15 @@ class Agent(MyRobot):
                     motor_speed[1]=20
                 elif motor_speed[1]<-20:
                     motor_speed[1]=-20
-                self.left_motor.setVelocity(motor_speed[0])
-                self.right_motor.setVelocity(motor_speed[1])
+                self.left_motor.setVelocity(motor_speed[0]) # Command motor 1
+                self.right_motor.setVelocity(motor_speed[1]) # Command motor 2
                 # print(motor_speed)     
     
 
 if __name__ == "__main__":
     robot = Robot()    
     expert = Expert(robot)
-    net = Net(100, 0.0001, 50)
+    net = Net(100, 0.0001, 100)
     agent = Agent(net, robot)
         
     need_data = False
