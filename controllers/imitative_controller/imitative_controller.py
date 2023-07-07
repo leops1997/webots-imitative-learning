@@ -24,6 +24,7 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader, random_split
 import torchvision.datasets as datasets
 import torchvision.transforms as transform
+from torchsummary import summary
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 
@@ -299,7 +300,7 @@ class Agent(MyRobot):
                     motor_speed[1]=-20
                 self.left_motor.setVelocity(motor_speed[0]) # Command motor 1
                 self.right_motor.setVelocity(motor_speed[1]) # Command motor 2
-                # print(motor_speed)     
+                print(motor_speed)     
     
 
 if __name__ == "__main__":
@@ -307,10 +308,11 @@ if __name__ == "__main__":
     expert = Expert(robot)
     net = Net(100, 0.0001, 100)
     agent = Agent(net, robot)
-        
+    summary(net, (3,96,96))
+    
     need_data = False
-    need_train = True
+    need_train = False
     
     if need_data:
         expert.run()
-    agent.run(need_train)
+    agent.run(need_train)   
